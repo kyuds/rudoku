@@ -1,0 +1,2 @@
+# rudoku
+Rust Sudoku

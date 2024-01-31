@@ -27,7 +27,7 @@ impl Board {
         Board { board, invariant }
     }
 
-    fn empty() -> Board {
+    pub fn empty() -> Board {
         Board {
             board: [0; BOARD_SIZE],
             invariant: Vec::new(),
@@ -43,7 +43,8 @@ impl Board {
             for ch in line.split_whitespace() {
                 if curr_pos == 81 {
                     return Err(Box::new(io::Error::new(
-                        io::ErrorKind::InvalidData, "Input should be 9x9 grid. Only 81 numbers."
+                        io::ErrorKind::InvalidData, 
+                        "Input should be 9x9 grid. Only 81 numbers."
                     )));
                 }
                 let num: u8 = match ch.parse() {
@@ -51,7 +52,8 @@ impl Board {
                         if n < 10 { n }
                         else {
                             return Err(Box::new(io::Error::new(
-                                io::ErrorKind::InvalidData, "Numbers should be in [0,10)."
+                                io::ErrorKind::InvalidData, 
+                                "Numbers should be in [0,10)."
                             )));
                         }
                     },
@@ -66,7 +68,8 @@ impl Board {
         }
         if curr_pos != 81 {
             return Err(Box::new(io::Error::new(
-                io::ErrorKind::InvalidData, "Input is less than 81 numbers."
+                io::ErrorKind::InvalidData, 
+                "Input is less than 81 numbers."
             )));
         }
         Ok(board)
@@ -198,6 +201,16 @@ impl Board {
         self.board = [0; BOARD_SIZE];
         for p in &self.invariant {
             self.board[usize::from(p.0)] = p.1;
+        }
+    }
+
+    /// Print board
+    pub fn print(&self) {
+        for r in 0..9 {
+            for c in 0..9 {
+                print!("{} ", self.board[usize::from(linearize(r, c))]);
+            }
+            println!("");
         }
     }
 }

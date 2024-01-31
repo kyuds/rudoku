@@ -1,36 +1,40 @@
 mod game;
 
 use std::error::Error;
-// use rudoku::board::Board;
-// use rudoku::solver::backtrack_solver;
-// use rudoku::generator::generate;
+use std::io;
+use rudoku::board::Board;
+use rudoku::solver::{ Solver, BacktrackSolver };
+use rudoku::generator::Generator;
 use clap::{ Parser, Subcommand, Args };
-// use crate::game;
+use crate::game::tui_start;
 
-// rudoku {cli | gui} --{(crte|slv)|(crte|opn)} PATHS...
+type ErrCheck = Result<(), Box<dyn Error>>;
 
 fn main() {
     let args = Arguments::parse();
-
-    let handler: Result<(), Box<dyn Error>> = match args.app {
+    let error_checker: ErrCheck = match args.app {
         App::Cli { opt, paths } => {
             if opt.solve && paths.len() == 2 {
                 solve(&paths)
             } else if opt.create && paths.len() == 1 {
                 create(&paths[0])
             } else {
-                println!("Incorrect number of file paths provided.");
-                Ok(())
+                Err(Box::new(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Incorrect number of file paths provided."
+                )))
             }
         },
-        App::Gui { opt, path } => {
+        App::Tui { opt, path } => {
             if opt.create {
-                Ok(())
+                tui_create()
             } else if opt.open && path.is_some() {
-                Ok(())
+                tui_open(&path.unwrap())
             } else {
-                println!("Need to provide a file path to open.");
-                Ok(())
+                Err(Box::new(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Need to provide a file path to open."
+                )))
             }
         },
     };
@@ -54,9 +58,9 @@ enum App {
         opt: CliOptions,
         paths: Vec<String>,
     },
-    Gui {
+    Tui {
         #[command(flatten)]
-        opt: GuiOptions,
+        opt: TuiOptions,
         path: Option<String>,
     },
 }
@@ -72,19 +76,42 @@ struct CliOptions {
 
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
-struct GuiOptions {
+struct TuiOptions {
     #[arg(short, long)]
     create: bool,
     #[arg(short, long)]
     open: bool,
 }
 
-fn solve(paths: &Vec<String>) -> Result<(), Box<dyn Error>> {
-    println!("Solving {} and outputting to {}", paths[0], paths[1]);
+// helpers for cli command.
+fn solve(paths: &Vec<String>) -> ErrCheck {
+    let mut board = Board::from_file(&paths[0])?;
+    let solved = BacktrackSolver::run(&mut board);
+    if solved {
+        println!("Successfully solved {}\nSaving results to {}", paths[0], paths[1]);
+        board.to_file(&paths[1])
+    } else {
+        Err(Box::new(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "Sudoku board could not be solved."
+        )))
+    }
+}
+
+fn create(path: &String) -> ErrCheck {
+    println!("Creating new game in '{}'", path);
+    Generator::create().to_file(&path)    
+}
+
+// helpers for tui command
+fn tui_create() -> ErrCheck {
+    let board = Generator::create();
+    tui_start(board);
     Ok(())
 }
 
-fn create(path: &String) -> Result<(), Box<dyn Error>> {
-    println!("Creating into file {}", path);
+fn tui_open(path: &String) -> ErrCheck {
+    let board = Board::from_file(&path)?;
+    tui_start(board);
     Ok(())
 }

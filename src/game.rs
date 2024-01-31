@@ -1,4 +1,12 @@
-// use rudoku::board::{ Board, BoardInvalid };
+use rudoku::board::Board;
+
+const SUDOKU_TEXT: &'static str = 
+r"  _____ _    _ _____   ____  _  ___    _ 
+ / ____| |  | |  __ \ / __ \| |/ / |  | |
+| (___ | |  | | |  | | |  | | ' /| |  | |
+ \___ \| |  | | |  | | |  | |  < | |  | |
+ ____) | |__| | |__| | |__| | . \| |__| |
+|_____/ \____/|_____/ \____/|_|\_\\____/ ";
 
 // Menu:
 // - Arrow Keys
@@ -29,3 +37,7 @@
 // impl ConsoleBoard for Board {
 
 // }
+
+pub fn tui_start(_board: Board) {
+    
+}

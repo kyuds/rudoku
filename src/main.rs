@@ -1,18 +1,19 @@
 mod game;
 
-use std::error::Error;
-use std::io;
-use rudoku::board::Board;
-use rudoku::solver::{ Solver, BacktrackSolver };
-use rudoku::generator::Generator;
-use clap::{ Parser, Subcommand, Args };
+use rudoku::{
+    board::Board,
+    solver::{ Solver, BacktrackSolver },
+    generator::Generator,
+};
 use crate::game::tui_start;
+use std::{ error::Error, io };
+use clap::{ Parser, Subcommand, Args };
 
 type ErrCheck = Result<(), Box<dyn Error>>;
 
 fn main() {
     let args = Arguments::parse();
-    let error_checker: ErrCheck = match args.app {
+    let _error_checker: ErrCheck = match args.app {
         App::Cli { opt, paths } => {
             if opt.solve && paths.len() == 2 {
                 solve(&paths)
@@ -83,7 +84,7 @@ struct TuiOptions {
     open: bool,
 }
 
-// helpers for cli command.
+// helper functions for different commands.
 fn solve(paths: &Vec<String>) -> ErrCheck {
     let mut board = Board::from_file(&paths[0])?;
     let solved = BacktrackSolver::run(&mut board);
@@ -100,12 +101,13 @@ fn solve(paths: &Vec<String>) -> ErrCheck {
 
 fn create(path: &String) -> ErrCheck {
     println!("Creating new game in '{}'", path);
-    Generator::create().to_file(&path)    
+    let mut gen = Generator::new(Board::arbitrary_seed());
+    gen.create().to_file(&path)    
 }
 
-// helpers for tui command
 fn tui_create() -> ErrCheck {
-    let board = Generator::create();
+    let mut gen = Generator::new(Board::arbitrary_seed());
+    let board = gen.create();
     tui_start(board);
     Ok(())
 }

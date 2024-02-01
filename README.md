@@ -1,4 +1,4 @@
-#rudoku
+# rudoku
 
 ```
 cargo run cli --solve data/sample1.txt sample1_solved.txt

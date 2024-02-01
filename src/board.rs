@@ -5,6 +5,7 @@ use std::fs::{ self, OpenOptions};
 
 const BOARD_SIZE: usize = 81;
 const WIDTH_SIZE: u8 = 9;
+const CELL_SIZE: u8 = 3;
 
 /// Enum to determine positions that violate sudoku properties.
 pub enum BoardInvalid {
@@ -22,6 +23,7 @@ pub struct Board {
     invariant: Vec<(u8, u8)>,
 }
 
+// Constructors and File Operations.
 impl Board {
     pub fn new(board: [u8; BOARD_SIZE], invariant: Vec<(u8, u8)>) -> Board {
         Board { board, invariant }
@@ -89,7 +91,10 @@ impl Board {
         file.write(stringify.as_bytes())?;
         Ok(())
     }
+}
 
+// Verification Logic
+impl Board {
     /// Check if the sudoku board is solved completely. No empty spaces.
     pub fn verify(&self) -> bool {
         // 0~8: row, 9~17: col, 18~26: grid
@@ -174,7 +179,10 @@ impl Board {
             .iter()
             .all(|&t| self.board[usize::from(t.0)] == t.1)
     }
+}
 
+// Getters and Setters
+impl Board {
     /// Getter method for respective coordinate. Panics if coordinate is invalid.
     /// Will panic on out of bounds error. 
     pub fn get(&self, r: u8, c: u8) -> u8 {
@@ -203,7 +211,10 @@ impl Board {
             self.board[usize::from(p.0)] = p.1;
         }
     }
+}
 
+// Other Utilities
+impl Board {
     /// Print board
     pub fn print(&self) {
         for r in 0..9 {
@@ -212,6 +223,30 @@ impl Board {
             }
             println!("");
         }
+    }
+
+    pub fn get_possible_values(&self, r: u8, c: u8) -> Vec<u8> {
+        let mut vals = Vec::new();
+        'l: for cands in 1..=WIDTH_SIZE {
+            // check row and col concurrently
+            for o in 0..WIDTH_SIZE {
+                if self.get(r, o) == cands || self.get(o, c) == cands {
+                    continue 'l;
+                }
+            }
+            // check box
+            let pr = (r / CELL_SIZE) * CELL_SIZE;
+            let pc = (c / CELL_SIZE) * CELL_SIZE;
+            for i in 0..CELL_SIZE {
+                for j in 0..CELL_SIZE {
+                    if self.get(pr + i, pc + j) == cands {
+                        continue 'l;
+                    }
+                }
+            }
+            vals.push(cands);
+        }
+        vals
     }
 }
 
@@ -222,28 +257,4 @@ fn linearize(r: u8, c: u8) -> u8 {
         panic!("Coordinates ({r}, {c}) is invalid in 9x9 grid.");
     }
     r * 9 + c
-}
-
-// Test Module
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_file_io() {
-
-    }
-
-    #[test]
-    fn test_get_set() {
-
-    }
-
-    #[test]
-    fn test_verify() {
-
-    }
-
-    #[test]
-    fn test_invariants() {
-
-    }
 }

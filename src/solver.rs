@@ -7,12 +7,12 @@ pub trait Solver {
 }
 
 // Solvers:
-pub struct BacktrackSolver;
-// pub struct GeneticSolver;
-// pub struct ExactCoverSolver;
-// pub struct ConstraintSolver;
+pub struct BTSolver;
+// pub struct GASolver;
+// pub struct ECSolver;
+// pub struct CSPSolver;
 
-impl Solver for BacktrackSolver {
+impl Solver for BTSolver {
     /// Use backtracking algorithm to solve the sudoku puzzle.
     /// Sudoku might be unsolvable --> hence return false
     fn run(board: &mut Board) -> bool {
@@ -21,7 +21,7 @@ impl Solver for BacktrackSolver {
 }
 
 // internal helper functions to match API.
-impl BacktrackSolver {
+impl BTSolver {
     fn internal(board: &mut Board, mut r: u8, mut c: u8) -> bool {
         if r + 1 == WIDTH_SIZE && c == WIDTH_SIZE {
             return true;

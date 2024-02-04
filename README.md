@@ -11,7 +11,7 @@ Rust Sudoku library and command line interface (CLI). The library consists of ab
 - [X] Sudoku solver (backtracking)
 - [ ] Sudoku solver (genetic algo)
 - [ ] Sudoku solver (exact cover)
-- [ ] Sudoku solver (constraint)
+- [ ] Sudoku solver (constraint propagation)
 - [X] Sudoku board generator
 - [ ] Interactive sudoku TUI
 - [ ] Actually write tests

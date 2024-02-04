@@ -1,6 +1,6 @@
 use crate::{
     board::Board,
-    solver::BacktrackSolver,
+    solver::BTSolver,
 };
 use rand::{
     prelude::*,
@@ -85,13 +85,12 @@ impl Generator {
                 let idx = self.rng.gen::<u8>() % 81;
                 let r = idx / 9;
                 let c = idx % 9;
-                println!("{}, {}", r, c);
                 let tmp = board.get(r, c);
                 if tmp == 0 {
                     continue;
                 }
                 let _ = board.set(r, c, 0);
-                if BacktrackSolver::num_solution(board) == 1 {
+                if BTSolver::num_solution(board) == 1 {
                     continue 'l;
                 }
                 let _ = board.set(r, c, tmp);

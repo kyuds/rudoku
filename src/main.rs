@@ -1,11 +1,10 @@
-mod game;
+mod tui;
 
 use rudoku::{
     board::Board,
-    solver::{ Solver, BacktrackSolver },
+    solver::{ Solver, BTSolver },
     generator::Generator,
 };
-use crate::game::tui_start;
 use std::{ error::Error, io };
 use clap::{ Parser, Subcommand, Args };
 
@@ -87,7 +86,7 @@ struct TuiOptions {
 // helper functions for different commands.
 fn solve(paths: &Vec<String>) -> ErrCheck {
     let mut board = Board::from_file(&paths[0])?;
-    let solved = BacktrackSolver::run(&mut board);
+    let solved = BTSolver::run(&mut board);
     if solved {
         println!("Successfully solved {}\nSaving results to {}", paths[0], paths[1]);
         board.to_file(&paths[1])
@@ -101,19 +100,17 @@ fn solve(paths: &Vec<String>) -> ErrCheck {
 
 fn create(path: &String) -> ErrCheck {
     println!("Creating new game in '{}'", path);
-    let mut gen = Generator::new(Board::arbitrary_seed());
+    let mut gen = Generator::new(Generator::arbitrary_seed());
     gen.create().to_file(&path)    
 }
 
 fn tui_create() -> ErrCheck {
-    let mut gen = Generator::new(Board::arbitrary_seed());
+    let mut gen = Generator::new(Generator::arbitrary_seed());
     let board = gen.create();
-    tui_start(board);
-    Ok(())
+    tui::start(board)
 }
 
 fn tui_open(path: &String) -> ErrCheck {
     let board = Board::from_file(&path)?;
-    tui_start(board);
-    Ok(())
+    tui::start(board)
 }

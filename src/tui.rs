@@ -25,28 +25,12 @@ use crossterm::{
 };
 use std::{thread, time};
 
-pub fn start(board: Board) -> Result<(), Box<dyn Error>> {
-    enable_raw_mode()?;
-    let mut state = GameState::new(board);
-    let mut stdout = io::stdout();
-    state.display(&mut stdout)?;
-    thread::sleep(time::Duration::from_millis(1000));
-    state.display(&mut stdout)?;
-    // loop {
-    //     // wait for cmd
-    //     // run cmd (match here)
-    //     // refresh screen
-    //     match event::read()? {
-    //         Event::Key(event) => {
+// DEVELOPMENT IN PROGRESS
 
-    //         },
-    //         _ => {
-    //             continue;
-    //         },
-    //     }
-    //     state.display();
-    // }
-    disable_raw_mode()?;
+pub fn start(_board: Board) -> Result<(), Box<dyn Error>> {
+    // enable_raw_mode()?;
+    // disable_raw_mode()?;
+    println!("Not implemented yet!");
     Ok(())
 }
 

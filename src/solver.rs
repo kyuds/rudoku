@@ -8,9 +8,6 @@ pub trait Solver {
 
 // Solvers:
 pub struct BTSolver;
-// pub struct GASolver;
-// pub struct ECSolver;
-// pub struct CSPSolver;
 
 impl Solver for BTSolver {
     /// Use backtracking algorithm to solve the sudoku puzzle.
